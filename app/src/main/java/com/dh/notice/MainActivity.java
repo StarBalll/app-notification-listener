@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 .add("context", context)
                 .build();
         Request request = new Request.Builder()
-                .url("https://denghao.me/special/appNotice/get.php")
+                .url("http://home.aimsg.vip:61114/bcoin.aardio")
                 .post(requestBody)
                 .build();
 
