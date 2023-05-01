@@ -30,6 +30,56 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
     private TextView tvMsg;
+    private WebSocket webSocket;
+    //下面是我新加的WS的方式
+    
+    private void connectWebSocket() {
+    OkHttpClient client = new OkHttpClient();
+    String url = "ws://192.168.168.221:9000/";
+
+    Request request = new Request.Builder().url(url).build();
+    WebSocketListener listener = new WebSocketListener() {
+        @Override
+        public void onOpen(WebSocket webSocket, Response response) {
+            System.out.println("WebSocket client connected");
+            MainActivity.this.webSocket = webSocket;
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, String text) {
+            System.out.println("Received message: " + text);
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, ByteString bytes) {
+            System.out.println("Received binary message");
+        }
+
+        @Override
+        public void onClosing(WebSocket webSocket, int code, String reason) {
+            webSocket.close(1000, null);
+            System.out.println("WebSocket client disconnected");
+        }
+
+        @Override
+        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+            t.printStackTrace();
+        }
+    };
+    webSocket = client.newWebSocket(request, listener);
+}
+    
+    private void send(String context) {
+    if (webSocket == null) {
+        connectWebSocket();
+    }
+    if (webSocket != null) {
+        webSocket.send(context);
+    } else {
+        System.out.println("WebSocket client not connected");
+    }
+}
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,29 +155,29 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void send(String context) {
-        System.out.println("发送："+context);
-        OkHttpClient okHttpClient = new OkHttpClient();
-        RequestBody requestBody = new FormBody.Builder()
-                .add("context", context)
-                .build();
-        Request request = new Request.Builder()
-                .url("http://home.aimsg.vip:61114/bcoin.aardio")
-                .post(requestBody)
-                .build();
+//     private void send(String context) {
+//         System.out.println("发送："+context);
+//         OkHttpClient okHttpClient = new OkHttpClient();
+//         RequestBody requestBody = new FormBody.Builder()
+//                 .add("context", context)
+//                 .build();
+//         Request request = new Request.Builder()
+//                 .url("http://home.aimsg.vip:61114/bcoin.aardio")
+//                 .post(requestBody)
+//                 .build();
 
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                System.out.println("发送失败 onFailure: " + e.getMessage());
-            }
+//         okHttpClient.newCall(request).enqueue(new Callback() {
+//             @Override
+//             public void onFailure(Call call, IOException e) {
+//                 System.out.println("发送失败 onFailure: " + e.getMessage());
+//             }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                System.out.println("响应内容 body: " + response.body().string());
-            }
-        });
+//             @Override
+//             public void onResponse(Call call, Response response) throws IOException {
+//                 System.out.println("响应内容 body: " + response.body().string());
+//             }
+//         });
 
-    }
+//     }
 
 }
