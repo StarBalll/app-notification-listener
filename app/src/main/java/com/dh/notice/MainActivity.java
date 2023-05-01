@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     
     private void connectWebSocket() {
     OkHttpClient client = new OkHttpClient();
-    String url = "ws://192.168.168.221:9000/";
+    String url = "ws://192.168.168.221:9000/aardio";
 
     Request request = new Request.Builder().url(url).build();
     WebSocketListener listener = new WebSocketListener() {
